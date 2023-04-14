@@ -15,6 +15,22 @@ conn <- dbConnect(RSQLite::SQLite(), dbname = "MedPracDB_R.db")
 
 ui <- fluidPage(
   
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css",
+              href = "https://bootswatch.com/4/darkly/bootstrap.min.css"),
+    tags$style("
+      body {
+        background-color: #343a40;
+        color: #f8f9fa;
+      }
+      .navbar-dark .navbar-brand {
+        color: #f8f9fa;
+      }
+      .navbar-dark .navbar-nav .nav-link {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    ")
+  ), #darkTheme
     tabsetPanel(
     id = "tabs",   
         
@@ -45,9 +61,111 @@ ui <- fluidPage(
   
    tabPanel("Update Health Information", 
             titlePanel(h1("Medical Practice Database", align="center")),
+            textInput("Up_Health_SelectedPatient", "Enter the Patient ID number (or 0 to exit): "),
             textOutput("Up_HealthInfo_Table_Patient_ID"),
             tableOutput("Up_HealthInfo_Data_Patient_ID"),
+            textOutput("Up_Health_Title_currentconditions"),
+            tableOutput("Up_Health_Data_currentconditions"),
+            
+            selectInput("Up_Health_SI_smoking", label="Do you need to update current smoking status? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_smoking=='YES (Update)'",
+                             selectInput("Up_Health_smoking", 
+                                         "Enter new smoking status (0=NOT current smoker, 1=current smoker): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition1", label="Do you need to update whether the patient has Condition 1? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition1=='YES (Update)'",
+                             selectInput("Up_Health_condition1", 
+                                         "Enter Condition 1 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition2", label="Do you need to update whether the patient has Condition 2? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition2=='YES (Update)'",
+                             selectInput("Up_Health_condition2", 
+                                         "Enter Condition 2 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition3", label="Do you need to update whether the patient has Condition 3? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition3=='YES (Update)'",
+                             selectInput("Up_Health_condition3", 
+                                         "Enter Condition 3 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition4", label="Do you need to update whether the patient has Condition 4? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition4=='YES (Update)'",
+                             selectInput("Up_Health_condition4", 
+                                         "Enter Condition 4 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition5", label="Do you need to update whether the patient has Condition 5? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition5=='YES (Update)'",
+                             selectInput("Up_Health_condition5", 
+                                         "Enter Condition 5 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition6", label="Do you need to update whether the patient has Condition 6? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition6=='YES (Update)'",
+                             selectInput("Up_Health_condition6", 
+                                         "Enter Condition 6 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition7", label="Do you need to update whether the patient has Condition 7? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition7=='YES (Update)'",
+                             selectInput("Up_Health_condition7", 
+                                         "Enter Condition 7 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition8", label="Do you need to update whether the patient has Condition 8? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition8=='YES (Update)'",
+                             selectInput("Up_Health_condition8", 
+                                         "Enter Condition 8 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition9", label="Do you need to update whether the patient has Condition 9? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition9=='YES (Update)'",
+                             selectInput("Up_Health_condition9", 
+                                         "Enter Condition 9 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            selectInput("Up_Health_SI_condition10", label="Do you need to update whether the patient has Condition 10? ",
+                        choices=c("NO (Keep as is)", "YES (Update)")),
+            conditionalPanel(condition="input.Up_Health_SI_condition10=='YES (Update)'",
+                             selectInput("Up_Health_condition10", 
+                                         "Enter Condition 10 status (0=does NOT have condition, 1=HAS condition): ",
+                                         choices=c(0,1))),
+            actionButton("AB_Update_Health", label="Click Here to Update Patient Health info in Database")
             ),
+ 
+ tabPanel("Update Vitals Information", 
+          titlePanel(h1("Medical Practice Database", align="center")),
+          textInput("Up_Vitals_SelectedPatient", "Enter the Patient ID number (or 0 to exit): "),
+          textOutput("Up_VitalsInfo_Table_Patient_ID"),
+          tableOutput("Up_VitalsInfo_Data_Patient_ID"),
+          textOutput("Up_Vitals_Title_currentconditions"),
+          tableOutput("Up_Vitals_Data_currentconditions"),
+          selectInput("Up_Vitals_SI_last_height",label="Do you need to update the patient's height? ",
+                      choices=c("NO (Keep as is)", "YES (Update)")),
+          conditionalPanel(condition = "input.Up_Vitals_SI_last_height=='YES (Update)'",
+                           textInput("Up_Vitals_last_height","Enter the patient's new height: ")),
+          selectInput("Up_Vitals_SI_last_weight",label="Do you need to update the patient's weight? ",
+                      choices=c("NO (Keep as is)", "YES (Update)")),
+          conditionalPanel(condition = "input.Up_Vitals_SI_last_weight=='YES (Update)'",
+                           textInput("Up_Vitals_last_weight","Enter the patient's new weight: ")),
+          selectInput("Up_Vitals_SI_last_heartrate",label="Do you need to update the patient's heart rate? ",
+                      choices=c("NO (Keep as is)", "YES (Update)")),
+          conditionalPanel(condition = "input.Up_Vitals_SI_last_heartrate=='YES (Update)'",
+                           textInput("Up_Vitals_last_heartrate","Enter the patient's new heart rate: ")),
+          selectInput("Up_Vitals_SI_last_systolic_bp",label="Do you need to update the patient's systolic blood pressure? ",
+                      choices=c("NO (Keep as is)", "YES (Update)")),
+          conditionalPanel(condition = "input.Up_Vitals_SI_last_systolic_bp=='YES (Update)'",
+                           textInput("Up_Vitals_last_systolic_bp","Enter the patient's new systolic blood pressure: ")),
+          selectInput("Up_Vitals_SI_last_diastolic_bp",label="Do you need to update the patient's diastolic blood pressure? ",
+                      choices=c("NO (Keep as is)", "YES (Update)")),
+          conditionalPanel(condition = "input.Up_Vitals_SI_last_diastolic_bp=='YES (Update)'",
+                           textInput("Up_Vitals_last_diastolic_bp","Enter the patient's new diastolic blood pressure: ")),
+          actionButton("AB_Update_Vitals", label="Click Here to Update Patient Vitals info in Database")
+          ),
+ 
  
    tabPanel("Update Financial Information", 
             titlePanel(h1("Medical Practice Database", align="center")),
@@ -71,11 +189,11 @@ ui <- fluidPage(
             selectInput("Up_PPC_SI_Firstname", label="Do you need to update the patient's First name? ",
                          choices=c("NO (Keep as is)", "YES (Update)")),
             conditionalPanel(condition="input.Up_PPC_SI_Firstname=='YES (Update)'",
-                             textInput("Up_PPC_Firstname", "Enter new First name: ")),
+                             textOutput("Up_FirstNameChangeAttempt")),
             selectInput("Up_PPC_SI_Lastname", label="Do you need to update the patient's Last name? ",
                          choices=c("NO (Keep as is)", "YES (Update)")),
             conditionalPanel(condition="input.Up_PPC_SI_Lastname=='YES (Update)'",
-                             textInput("Up_PPC_Lastname", "Enter new Last name: ")),
+                             textOutput("Up_LastNameChangeAttempt")),
             selectInput("Up_PPC_SI_Current_patient", label="Do you need to update current patient status? ",
                          choices=c("NO (Keep as is)", "YES (Update)")),
             conditionalPanel(condition="input.Up_PPC_SI_Current_patient=='YES (Update)'",
@@ -294,11 +412,140 @@ server <- function(input, output, session) {
         df1<-dbGetQuery(conn, 'SELECT *
                           FROM Patient_ID 
                           WHERE Patient_ID = ?',
-                        params = as.integer(input$SelectedPatient))
+                        params = as.integer(input$Up_Health_SelectedPatient))
         df1
-    })  
+    }, digits=0)
     
+    output$Up_Health_Title_currentconditions <- renderText({
+      "This patient is listed as having the following health conditions: "
+    })
     
+    output$Up_Health_Data_currentconditions <- renderTable({
+      df6<-dbGetQuery(conn, 'SELECT Patient_ID,
+                               (CASE Current_smoker WHEN 0
+                               THEN "" ELSE "Current Smoker, " END) ||
+                               (CASE Condition_1 WHEN 0
+                               THEN "" ELSE "Condition 1, " END) ||
+                               (CASE Condition_2 WHEN 0
+                               THEN "" ELSE "Condition 2, " END) ||
+                               (CASE Condition_3 WHEN 0
+                               THEN "" ELSE "Condition 3, " END) ||
+                               (CASE Condition_4 WHEN 0
+                               THEN "" ELSE "Condition 4, " END) ||
+                               (CASE Condition_5 WHEN 0
+                               THEN "" ELSE "Condition 5, " END) ||
+                               (CASE Condition_6 WHEN 0
+                               THEN "" ELSE "Condition 6, " END) ||
+                               (CASE Condition_7 WHEN 0
+                               THEN "" ELSE "Condition 7, " END) ||
+                               (CASE Condition_8 WHEN 0
+                               THEN "" ELSE "Condition 8, " END) ||
+                               (CASE Condition_9 WHEN 0
+                               THEN "" ELSE "Condition 9, " END) ||
+                               (CASE Condition_10 WHEN 0
+                               THEN "" ELSE "Condition 10, " END)
+                               AS Known_health_conditions
+                          FROM Patient_health 
+                          WHERE Patient_ID = ?',
+                      params = as.integer(input$Up_Health_SelectedPatient))
+      df6
+    }, digits=0)
+    
+    observeEvent(input$AB_Update_Health, {
+      if(input$Up_Health_SI_smoking == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Current_smoker = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_smoking, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition1 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_1 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition1, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition2 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_2 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition2, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition3 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_3 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition3, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition4 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_4 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition4, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition5 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_5 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition5, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition6 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_6 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition6, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition7 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_7 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition7, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition8 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_8 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition8, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition9 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_9 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition9, input$Up_Health_SelectedPatient)))
+      }
+      if(input$Up_Health_SI_condition10 == "YES (Update)"){
+        dbExecute(conn, 'UPDATE Patient_health SET Condition_10 = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Health_condition10, input$Up_Health_SelectedPatient)))
+      }
+      
+      updateTabsetPanel(session=session, "tabs", selected = "Transaction Confirmation")
+    })
+    
+    ## OUTPUT for tabPanel "Update Vitals Information"
+    
+    output$Up_VitalsInfo_Table_Patient_ID <- renderText({
+      "TABLE Patient_ID"
+    })
+    output$Up_VitalsInfo_Data_Patient_ID <- renderTable({
+      df1<-dbGetQuery(conn, 'SELECT *
+                          FROM Patient_ID 
+                          WHERE Patient_ID = ?',
+                      params = as.integer(input$Up_Vitals_SelectedPatient))
+      df1
+    }, digits=0)
+    
+    output$Up_Vitals_Title_currentconditions <- renderText({"Patient's last vitals"})
+    
+    output$Up_Vitals_Data_currentconditions <- renderTable({
+      df5<-dbGetQuery(conn, 'SELECT *
+                          FROM Patient_vitals
+                          WHERE Patient_ID = ?',
+                        params = as.integer(input$Up_Vitals_SelectedPatient))
+      df5
+    }, digits=0)
+    
+    observeEvent(input$AB_Update_Vitals, {
+      if(input$Up_Vitals_SI_last_height == "YES (Update)"){
+        dbExecute('UPDATE Patient_vitals SET Last_height = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Vitals_last_height,input$Up_Vitals_SelectedPatient)))
+      }
+      if(input$Up_Vitals_SI_last_weight == "YES (Update)"){
+        dbExecute('UPDATE Patient_vitals SET Last_weight = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Vitals_last_weight,input$Up_Vitals_SelectedPatient)))
+      }
+      if(input$Up_Vitals_SI_last_heartrate == "YES (Update)"){
+        dbExecute('UPDATE Patient_vitals SET Last_heartrate = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Vitals_last_heartrate,input$Up_Vitals_SelectedPatient)))
+      }
+      if(input$Up_Vitals_SI_last_systolic_bp == "YES (Update)"){
+        dbExecute('UPDATE Patient_vitals SET Last_systolic_BP = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Vitals_last_systolic_bp,input$Up_Vitals_SelectedPatient)))
+      }
+      if(input$Up_Vitals_SI_last_diastolic_bp == "YES (Update)"){
+        dbExecute('UPDATE Patient_vitals SET Last_diastolic_BP = ? WHERE Patient_ID = ?',
+                  params = (c(input$Up_Vitals_last_diastolic_bp,input$Up_Vitals_SelectedPatient)))
+      }
+      updateTabsetPanel(session=session, "tabs", selected = "Transaction Confirmation")
+    })
 ## OUTPUT for tabPanel "Update Financial Information"    
     
     output$Up_FinInfo_Table_Patient_ID <- renderText({
@@ -362,16 +609,24 @@ server <- function(input, output, session) {
                           WHERE Patient_ID = ?',
                         params = as.integer(input$Up_PPCInfo_SelectedPatient))
         df1
-    }, digits=0)    
+    }, digits=0)
+    
+    output$Up_FirstNameChangeAttempt <- renderText({
+      "For a legal name change, create a new patient.  Name will not update in database."
+    })
+    output$Up_LastNameChangeAttempt <- renderText({
+      "For a legal name change, create a new patient.  Name will not update in database."
+    })
+    
    observeEvent(input$AB_Update_PPC, {
-     if(input$Up_PPC_SI_Firstname == "YES (Update)"){
-       dbExecute(conn, 'UPDATE Patient_ID SET Firstname = ? WHERE Patient_ID = ?',
-                 params = (c(input$Up_PPC_Firstname, input$Up_PPCInfo_SelectedPatient)))
-     }
-     if(input$Up_PPC_SI_Lastname == "YES (Update)"){
-       dbExecute(conn, 'UPDATE Patient_ID SET Lastname = ? WHERE Patient_ID = ?',
-                 params = (c(input$Up_PPC_Lastname, input$Up_PPCInfo_SelectedPatient)))
-     }
+    #if(input$Up_PPC_SI_Firstname == "YES (Update)"){
+    #   dbExecute(conn, 'UPDATE Patient_ID SET Firstname = ? WHERE Patient_ID = ?',
+    #             params = (c(input$Up_PPC_Firstname, input$Up_PPCInfo_SelectedPatient)))
+    # }
+    #if(input$Up_PPC_SI_Lastname == "YES (Update)"){
+    #   dbExecute(conn, 'UPDATE Patient_ID SET Lastname = ? WHERE Patient_ID = ?',
+    #             params = (c(input$Up_PPC_Lastname, input$Up_PPCInfo_SelectedPatient)))
+    # }
      if(input$Up_PPC_SI_Current_patient == "YES (Update)"){
        dbExecute(conn, 'UPDATE Patient_ID SET Current_patient = ? WHERE Patient_ID = ?',
                  params = (c(input$Up_PPC_Current_patient, input$Up_PPCInfo_SelectedPatient)))
@@ -494,6 +749,7 @@ server <- function(input, output, session) {
         if(input$SelectedPatient==0) {stopApp()}
         if(input$Up_FinInfo_SelectedPatient==0) {stopApp()}
         if(input$Up_PPCInfo_SelectedPatient==0) {stopApp()}
+        if(input$Up_Health_SelectedPatient==0) {stopApp()}
     })
 }
 
