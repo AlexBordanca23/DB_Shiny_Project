@@ -1,0 +1,17 @@
+# R-specific
+*.Rproj
+*.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Shiny-specific
+.RData
+.Rhistory
+.Renviron
+.Rproj.user/
+.Rproj.site/
+
+# macOS-specific
+.DS_Store
+
