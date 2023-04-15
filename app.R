@@ -2,9 +2,11 @@
 # Only the database file and the app.R file are needed to run
 # Alex Bordanca and David Thiriot
 
+library(ggplot2)
 library(shiny)
 library(RSQLite)
 library(DBI)
+
 
 # Reference for how to move from tab to tab on action button push
 # is from Victorp posted 01Aug2016 at
@@ -29,6 +31,50 @@ ui <- fluidPage(
       .navbar-dark .navbar-nav .nav-link {
         color: rgba(255, 255, 255, 0.5);
       }
+      /* Set the background color of the sidebar to a dark color */
+.sidebar {
+  background-color: #333333;
+}
+
+/* Set the text color of the sidebar links to a light color */
+.sidebar a {
+  color: #FFFFFF;
+}
+
+/* Set the background color of the active sidebar link to a lighter color */
+.sidebar .active a {
+  background-color: #555555;
+}
+
+/* Set the text color of the main panel to a light color */
+.main-panel {
+  color: #FFFFFF;
+}
+
+/* Set the background color of the main panel to a dark color */
+.main-panel {
+  background-color: #222222;
+}
+
+/* Set the color of the borders and separators to a light color */
+.border, .separator {
+  border-color: #555555;
+}
+
+
+
+/* Set the color of the buttons to a light color */
+.btn-primary, .btn-success, .btn-info, .btn-warning, .btn-danger {
+  background-color: #555555;
+  border-color: #555555;
+  color: #FFFFFF;
+}
+
+/* Set the color of the button text to a light color */
+.btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-warning:hover, .btn-danger:hover {
+  color: #FFFFFF;
+}
+
     ")
   ), #darkTheme
     tabsetPanel(
@@ -291,8 +337,34 @@ ui <- fluidPage(
             
    ),
  
+    tabPanel("Visualization Dashboard",
+          titlePanel(h1("Medical Practice Database",align = "center")),
+          sidebarLayout(
+            sidebarPanel(
+              textInput("DataViz_SelectedPatient", "Enter the Patient ID number (or 0 to exit): "),
+              checkboxInput("DataViz_Last_height",label="Height",value=FALSE),
+              checkboxInput("DataViz_Last_weight",label="Weight",value=FALSE),
+              checkboxInput("DataViz_Last_heartrate",label="Heart rate",value=FALSE),
+              checkboxInput("DataViz_Last_systolic_BP",label="Systolic BP",value=FALSE),
+              checkboxInput("DataViz_Last_diastolic_BP",label="Diastolic BP",value=FALSE),
+            ),
+            mainPanel(
+             conditionalPanel(condition="input$DataViz_Last_height==TRUE",
+                              plotOutput("DataViz_Height_Plot")),
+             conditionalPanel(condition="input$DataViz_Last_weight==TRUE",
+                              plotOutput("DataViz_Weight_Plot")),
+             conditionalPanel(condition="input$DataViz_Last_heartrate==TRUE",
+                              plotOutput("DataViz_Heartrate_Plot")),
+             conditionalPanel(condition="input$DataViz_Last_systolic_BP==TRUE",
+                              plotOutput("DataViz_Systolic_Plot")),
+             conditionalPanel(condition="input$DataViz_Last_diastolic_BP==TRUE",
+                              plotOutput("DataViz_Diastolic_Plot"))
+            )
+          )
+    ),
+ 
     tabPanel("Transaction Confirmation", 
-          titlePanel(h1("Transaction Completed", align="center"))
+          titlePanel(h1("Transaction Completed", align="center")),
           
  ),
  
@@ -525,23 +597,23 @@ server <- function(input, output, session) {
     
     observeEvent(input$AB_Update_Vitals, {
       if(input$Up_Vitals_SI_last_height == "YES (Update)"){
-        dbExecute('UPDATE Patient_vitals SET Last_height = ? WHERE Patient_ID = ?',
+        dbExecute(conn,'UPDATE Patient_vitals SET Last_height = ? WHERE Patient_ID = ?',
                   params = (c(input$Up_Vitals_last_height,input$Up_Vitals_SelectedPatient)))
       }
       if(input$Up_Vitals_SI_last_weight == "YES (Update)"){
-        dbExecute('UPDATE Patient_vitals SET Last_weight = ? WHERE Patient_ID = ?',
+        dbExecute(conn, 'UPDATE Patient_vitals SET Last_weight = ? WHERE Patient_ID = ?',
                   params = (c(input$Up_Vitals_last_weight,input$Up_Vitals_SelectedPatient)))
       }
       if(input$Up_Vitals_SI_last_heartrate == "YES (Update)"){
-        dbExecute('UPDATE Patient_vitals SET Last_heartrate = ? WHERE Patient_ID = ?',
+        dbExecute(conn, 'UPDATE Patient_vitals SET Last_heartrate = ? WHERE Patient_ID = ?',
                   params = (c(input$Up_Vitals_last_heartrate,input$Up_Vitals_SelectedPatient)))
       }
       if(input$Up_Vitals_SI_last_systolic_bp == "YES (Update)"){
-        dbExecute('UPDATE Patient_vitals SET Last_systolic_BP = ? WHERE Patient_ID = ?',
+        dbExecute(conn, 'UPDATE Patient_vitals SET Last_systolic_BP = ? WHERE Patient_ID = ?',
                   params = (c(input$Up_Vitals_last_systolic_bp,input$Up_Vitals_SelectedPatient)))
       }
       if(input$Up_Vitals_SI_last_diastolic_bp == "YES (Update)"){
-        dbExecute('UPDATE Patient_vitals SET Last_diastolic_BP = ? WHERE Patient_ID = ?',
+        dbExecute(conn, 'UPDATE Patient_vitals SET Last_diastolic_BP = ? WHERE Patient_ID = ?',
                   params = (c(input$Up_Vitals_last_diastolic_bp,input$Up_Vitals_SelectedPatient)))
       }
       updateTabsetPanel(session=session, "tabs", selected = "Transaction Confirmation")
@@ -743,13 +815,138 @@ server <- function(input, output, session) {
         
     }) 
     
-## General observations
+    
+    ## Output for Visualization Dashboard
+    observeEvent(input$DataViz_Last_height, {
+      if(input$DataViz_Last_height == TRUE && input$DataViz_SelectedPatient != "") {
+        patient_height <- dbGetQuery(conn, paste0("SELECT Last_height FROM Patient_vitals WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        patient_sex <- dbGetQuery(conn, paste0("SELECT Biol_sex FROM Patient_ID WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        
+        
+          output$DataViz_Height_Plot <- renderPlot({
+            height_df <- dbGetQuery(conn,"SELECT pv.Last_height,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+            ggplot(height_df,aes(x=Last_height,color=Biol_sex))+geom_density() + 
+              geom_vline(xintercept = patient_height$Last_height, color = ifelse(patient_sex == "Female", "blue", "red"), linewidth = 2, linetype = "dashed") + 
+              labs(title = paste0("Distribution of Height (Patient ID = ", input$DataViz_SelectedPatient, ")"))
+          })
+        
+      } else if(input$DataViz_Last_height == TRUE && input$DataViz_SelectedPatient == "") {
+        output$DataViz_Height_Plot <- renderPlot({
+          height_df <- dbGetQuery(conn,"SELECT pv.Last_height,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(height_df,aes(x=Last_height,color=Biol_sex))+geom_density() +
+            labs(title = 'Distribution of Height')
+        })
+      } else {
+        output$DataViz_Height_Plot <- NULL
+      }
+    })
+    
+    observeEvent(input$DataViz_Last_weight, {
+      if(input$DataViz_Last_weight == TRUE && input$DataViz_SelectedPatient != "") {
+        patient_weight <- dbGetQuery(conn, paste0("SELECT Last_weight FROM Patient_vitals WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        patient_sex <- dbGetQuery(conn, paste0("SELECT Biol_sex FROM Patient_ID WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        
+        
+        output$DataViz_Weight_Plot <- renderPlot({
+          weight_df <- dbGetQuery(conn,"SELECT pv.Last_weight,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(weight_df,aes(x=Last_weight,color=Biol_sex))+geom_density() + 
+            geom_vline(xintercept = patient_weight$Last_weight, color = ifelse(patient_sex == "Female", "blue", "red"), linewidth = 2, linetype = "dashed") + 
+            labs(title = paste0("Distribution of Weight (Patient ID = ", input$DataViz_SelectedPatient, ")"))
+        })
+        
+      } else if(input$DataViz_Last_weight == TRUE && input$DataViz_SelectedPatient == "") {
+        output$DataViz_Height_Plot <- renderPlot({
+          weight_df <- dbGetQuery(conn,"SELECT pv.Last_weight,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(weight_df,aes(x=Last_weight,color=Biol_sex))+geom_density() +
+            labs(title = 'Distribution of Weight')
+        })
+      } else {
+        output$DataViz_Weight_Plot <- NULL
+      }
+    })
+    
+    
+    observeEvent(input$DataViz_Last_heartrate, {
+      if(input$DataViz_Last_heartrate == TRUE && input$DataViz_SelectedPatient != "") {
+        patient_heartrate <- dbGetQuery(conn, paste0("SELECT Last_heartrate FROM Patient_vitals WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        patient_sex <- dbGetQuery(conn, paste0("SELECT Biol_sex FROM Patient_ID WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        
+        
+        output$DataViz_Heartrate_Plot <- renderPlot({
+          heartrate_df <- dbGetQuery(conn,"SELECT pv.Last_heartrate,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(heartrate_df,aes(x=Last_heartrate,color=Biol_sex))+geom_density() + 
+            geom_vline(xintercept = patient_heartrate$Last_heartrate, color = ifelse(patient_sex == "Female", "blue", "red"), linewidth = 2, linetype = "dashed") + 
+            labs(title = paste0("Distribution of Heartrate (Patient ID = ", input$DataViz_SelectedPatient, ")"))
+        })
+        
+      } else if(input$DataViz_Last_heartrate == TRUE && input$DataViz_SelectedPatient == "") {
+        output$DataViz_Height_Plot <- renderPlot({
+          heartrate_df <- dbGetQuery(conn,"SELECT pv.Last_heartrate,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(heartrate_df,aes(x=Last_heartrate,color=Biol_sex))+geom_density() +
+            labs(title = 'Distribution of Heartrate')
+        })
+      } else {
+        output$DataViz_Heartrate_Plot <- NULL
+      }
+    })
+    
+    observeEvent(input$DataViz_Last_systolic_BP, {
+      if(input$DataViz_Last_systolic_BP == TRUE && input$DataViz_SelectedPatient != "") {
+        patient_systolic_BP <- dbGetQuery(conn, paste0("SELECT Last_systolic_BP FROM Patient_vitals WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        patient_sex <- dbGetQuery(conn, paste0("SELECT Biol_sex FROM Patient_ID WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        
+        
+        output$DataViz_Systolic_Plot <- renderPlot({
+          systolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_systolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(systolic_BP_df,aes(x=Last_systolic_BP,color=Biol_sex))+geom_density() + 
+            geom_vline(xintercept = patient_systolic_BP$Last_systolic_BP, color = ifelse(patient_sex == "Female", "blue", "red"), linewidth = 2, linetype = "dashed") + 
+            labs(title = paste0("Distribution of Systolic BP (Patient ID = ", input$DataViz_SelectedPatient, ")"))
+        })
+        
+      } else if(input$DataViz_Last_systolic_BP == TRUE && input$DataViz_SelectedPatient == "") {
+        output$DataViz_Systolic_Plot <- renderPlot({
+          systolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_systolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(heartrate_df,aes(x=Last_systolic_BP,color=Biol_sex))+geom_density() +
+            labs(title = 'Distribution of  Systolic BP')
+        })
+      } else {
+        output$DataViz_Systolic_Plot <- NULL
+      }
+    })
+    
+    observeEvent(input$DataViz_Last_diastolic_BP, {
+      if(input$DataViz_Last_diastolic_BP == TRUE && input$DataViz_SelectedPatient != "") {
+        patient_diastolic_BP <- dbGetQuery(conn, paste0("SELECT Last_diastolic_BP FROM Patient_vitals WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        patient_sex <- dbGetQuery(conn, paste0("SELECT Biol_sex FROM Patient_ID WHERE Patient_ID = '", input$DataViz_SelectedPatient, "'"))
+        
+        
+        output$DataViz_Diastolic_Plot <- renderPlot({
+          diastolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_diastolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(diastolic_BP_df,aes(x=Last_diastolic_BP,color=Biol_sex))+geom_density() + 
+            geom_vline(xintercept = patient_diastolic_BP$Last_diastolic_BP, color = ifelse(patient_sex == "Female", "blue", "red"), linewidth = 2, linetype = "dashed") + 
+            labs(title = paste0("Distribution of Systolic BP (Patient ID = ", input$DataViz_SelectedPatient, ")"))
+        })
+        
+      } else if(input$DataViz_Last_diastolic_BP == TRUE && input$DataViz_SelectedPatient == "") {
+        output$DataViz_Diastolic_Plot <- renderPlot({
+          diastolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_diastolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
+          ggplot(heartrate_df,aes(x=Last_diastolic_BP,color=Biol_sex))+geom_density() +
+            labs(title = 'Distribution of  Systolic BP')
+        })
+      } else {
+        output$DataViz_Diastolic_Plot <- NULL
+      }
+    })
+     
+    ## General observations
     
     observe({
         if(input$SelectedPatient==0) {stopApp()}
         if(input$Up_FinInfo_SelectedPatient==0) {stopApp()}
         if(input$Up_PPCInfo_SelectedPatient==0) {stopApp()}
         if(input$Up_Health_SelectedPatient==0) {stopApp()}
+        if(input$Up_Vitals_SelectedPatient==0) {stopApp()}
+        if(input$DataViz_SelectedPatient==0) {stopApp()}
     })
 }
 
