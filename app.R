@@ -16,67 +16,31 @@ conn <- dbConnect(RSQLite::SQLite(), dbname = "MedPracDB_R.db")
 #dbListTables(conn) 
 
 ui <- fluidPage(
-  
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css",
               href = "https://bootswatch.com/4/darkly/bootstrap.min.css"),
     tags$style("
-      body {
-        background-color: #343a40;
-        color: #f8f9fa;
-      }
-      .navbar-dark .navbar-brand {
-        color: #f8f9fa;
-      }
-      .navbar-dark .navbar-nav .nav-link {
-        color: rgba(255, 255, 255, 0.5);
-      }
-      /* Set the background color of the sidebar to a dark color */
-.sidebar {
-  background-color: #333333;
-}
-
-/* Set the text color of the sidebar links to a light color */
-.sidebar a {
-  color: #FFFFFF;
-}
-
-/* Set the background color of the active sidebar link to a lighter color */
-.sidebar .active a {
-  background-color: #555555;
-}
-
-/* Set the text color of the main panel to a light color */
-.main-panel {
-  color: #FFFFFF;
-}
-
-/* Set the background color of the main panel to a dark color */
-.main-panel {
-  background-color: #222222;
-}
-
-/* Set the color of the borders and separators to a light color */
-.border, .separator {
-  border-color: #555555;
-}
-
-
-
-/* Set the color of the buttons to a light color */
-.btn-primary, .btn-success, .btn-info, .btn-warning, .btn-danger {
-  background-color: #555555;
-  border-color: #555555;
-  color: #FFFFFF;
-}
-
-/* Set the color of the button text to a light color */
-.btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-warning:hover, .btn-danger:hover {
-  color: #FFFFFF;
-}
-
-    ")
-  ), #darkTheme
+    body {
+      background-color: #343a40;
+      color: #f8f9fa;
+    }
+    .navbar-dark .navbar-brand {
+      color: #f8f9fa;
+    }
+    }
+    .sidebar {
+      background-color: #343a40;
+      color: #f8f9fa;
+    }
+    .main {
+      background-color: #343a40;
+      color: #f8f9fa;
+    }
+    
+  ")
+  ),
+  
+   #darkTheme
     tabsetPanel(
     id = "tabs",   
         
@@ -347,6 +311,7 @@ ui <- fluidPage(
               checkboxInput("DataViz_Last_heartrate",label="Heart rate",value=FALSE),
               checkboxInput("DataViz_Last_systolic_BP",label="Systolic BP",value=FALSE),
               checkboxInput("DataViz_Last_diastolic_BP",label="Diastolic BP",value=FALSE),
+              style=" background-color: #343a40; color: #f8f9fa;"
             ),
             mainPanel(
              conditionalPanel(condition="input$DataViz_Last_height==TRUE",
