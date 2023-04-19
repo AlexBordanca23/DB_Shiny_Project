@@ -810,7 +810,7 @@ server <- function(input, output, session) {
           output$DataViz_Height_Plot <- renderPlot({
             height_df <- dbGetQuery(conn,"SELECT pv.Last_height,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
             ggplot(height_df,aes(x=Last_height,color=Biol_sex))+geom_density() + 
-              geom_vline(xintercept = patient_height$Last_height, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
+              geom_vline(xintercept = patient_height$Last_height, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
               labs(title = paste0("Distribution of Height (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
 
           })
@@ -835,7 +835,7 @@ server <- function(input, output, session) {
         output$DataViz_Weight_Plot <- renderPlot({
           weight_df <- dbGetQuery(conn,"SELECT pv.Last_weight,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(weight_df,aes(x=Last_weight,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_weight$Last_weight, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_weight$Last_weight, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Weight (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
@@ -860,7 +860,7 @@ server <- function(input, output, session) {
         output$DataViz_Heartrate_Plot <- renderPlot({
           heartrate_df <- dbGetQuery(conn,"SELECT pv.Last_heartrate,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(heartrate_df,aes(x=Last_heartrate,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_heartrate$Last_heartrate, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_heartrate$Last_heartrate, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Heartrate (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
@@ -884,7 +884,7 @@ server <- function(input, output, session) {
         output$DataViz_Systolic_Plot <- renderPlot({
           systolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_systolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(systolic_BP_df,aes(x=Last_systolic_BP,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_systolic_BP$Last_systolic_BP, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_systolic_BP$Last_systolic_BP, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Systolic BP (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
@@ -908,7 +908,7 @@ server <- function(input, output, session) {
         output$DataViz_Diastolic_Plot <- renderPlot({
           diastolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_diastolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(diastolic_BP_df,aes(x=Last_diastolic_BP,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_diastolic_BP$Last_diastolic_BP, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_diastolic_BP$Last_diastolic_BP, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Systolic BP (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
