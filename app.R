@@ -1,6 +1,7 @@
-# R Shiny app "MedPracDB_test1"
+# R Shiny app "MedPracDB"
 # Only the database file and the app.R file are needed to run
 # Alex Bordanca and David Thiriot
+# Troubleshooting conditionalPanel by Matt Onimus
 
 library(ggplot2)
 library(shiny)
@@ -19,6 +20,7 @@ ui <- fluidPage(
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css",
               href = "https://bootswatch.com/4/darkly/bootstrap.min.css"),
+    tags$head(HTML("<title>Medical Practice Database</title>")),
     tags$style("
     body {
       background-color: #343a40;
@@ -317,15 +319,15 @@ ui <- fluidPage(
               style=" background-color: #343a40; color: #f8f9fa;"
             ),
             mainPanel(
-             conditionalPanel(condition="input$DataViz_Last_height==TRUE",
+             conditionalPanel(condition="input.DataViz_Last_height==true",
                               plotOutput("DataViz_Height_Plot")),
-             conditionalPanel(condition="input$DataViz_Last_weight==TRUE",
+             conditionalPanel(condition="input.DataViz_Last_weight==true",
                               plotOutput("DataViz_Weight_Plot")),
-             conditionalPanel(condition="input$DataViz_Last_heartrate==TRUE",
+             conditionalPanel(condition="input.DataViz_Last_heartrate==true",
                               plotOutput("DataViz_Heartrate_Plot")),
-             conditionalPanel(condition="input$DataViz_Last_systolic_BP==TRUE",
+             conditionalPanel(condition="input.DataViz_Last_systolic_BP==true",
                               plotOutput("DataViz_Systolic_Plot")),
-             conditionalPanel(condition="input$DataViz_Last_diastolic_BP==TRUE",
+             conditionalPanel(condition="input.DataViz_Last_diastolic_BP==true",
                               plotOutput("DataViz_Diastolic_Plot"))
             )
           )
@@ -810,7 +812,7 @@ server <- function(input, output, session) {
           output$DataViz_Height_Plot <- renderPlot({
             height_df <- dbGetQuery(conn,"SELECT pv.Last_height,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
             ggplot(height_df,aes(x=Last_height,color=Biol_sex))+geom_density() + 
-              geom_vline(xintercept = patient_height$Last_height, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
+              geom_vline(xintercept = patient_height$Last_height, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
               labs(title = paste0("Distribution of Height (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
 
           })
@@ -824,7 +826,7 @@ server <- function(input, output, session) {
       } else {
         output$DataViz_Height_Plot <- NULL
       }
-    })
+    }, ignoreInit=TRUE)
     
     observeEvent(input$AB_update_plot, {
       if(input$DataViz_Last_weight == TRUE && input$DataViz_SelectedPatient != "") {
@@ -835,7 +837,7 @@ server <- function(input, output, session) {
         output$DataViz_Weight_Plot <- renderPlot({
           weight_df <- dbGetQuery(conn,"SELECT pv.Last_weight,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(weight_df,aes(x=Last_weight,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_weight$Last_weight, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_weight$Last_weight, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Weight (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
@@ -848,7 +850,7 @@ server <- function(input, output, session) {
       } else {
         output$DataViz_Weight_Plot <- NULL
       }
-    })
+    }, ignoreInit=TRUE)
     
     
     observeEvent(input$AB_update_plot, {
@@ -860,7 +862,7 @@ server <- function(input, output, session) {
         output$DataViz_Heartrate_Plot <- renderPlot({
           heartrate_df <- dbGetQuery(conn,"SELECT pv.Last_heartrate,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(heartrate_df,aes(x=Last_heartrate,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_heartrate$Last_heartrate, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_heartrate$Last_heartrate, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Heartrate (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
@@ -873,7 +875,7 @@ server <- function(input, output, session) {
       } else {
         output$DataViz_Heartrate_Plot <- NULL
       }
-    })
+    }, ignoreInit=TRUE)
     
     observeEvent(input$AB_update_plot, {
       if(input$DataViz_Last_systolic_BP == TRUE && input$DataViz_SelectedPatient != "") {
@@ -884,7 +886,7 @@ server <- function(input, output, session) {
         output$DataViz_Systolic_Plot <- renderPlot({
           systolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_systolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(systolic_BP_df,aes(x=Last_systolic_BP,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_systolic_BP$Last_systolic_BP, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_systolic_BP$Last_systolic_BP, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Systolic BP (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
@@ -897,7 +899,7 @@ server <- function(input, output, session) {
       } else {
         output$DataViz_Systolic_Plot <- NULL
       }
-    })
+    }, ignoreInit=TRUE)
     
     observeEvent(input$AB_update_plot, {   
       if(input$DataViz_Last_diastolic_BP == TRUE && input$DataViz_SelectedPatient != "") {
@@ -908,7 +910,7 @@ server <- function(input, output, session) {
         output$DataViz_Diastolic_Plot <- renderPlot({
           diastolic_BP_df <- dbGetQuery(conn,"SELECT pv.Last_diastolic_BP,pid.Biol_sex FROM Patient_vitals pv JOIN Patient_ID pid on pv.Patient_ID = pid.Patient_ID;")
           ggplot(diastolic_BP_df,aes(x=Last_diastolic_BP,color=Biol_sex))+geom_density() + 
-            geom_vline(xintercept = patient_diastolic_BP$Last_diastolic_BP, color = ifelse(patient_sex == "Female", "red", "blue"), size = 2, linetype = "dashed") + 
+            geom_vline(xintercept = patient_diastolic_BP$Last_diastolic_BP, color = ifelse(patient_sex == "Female", "blue", "red"), size = 2, linetype = "dashed") + 
             labs(title = paste0("Distribution of Systolic BP (Patient ID = ", isolate(input$DataViz_SelectedPatient), ")"))
         })
         
@@ -921,7 +923,7 @@ server <- function(input, output, session) {
       } else {
         output$DataViz_Diastolic_Plot <- NULL
       }
-    })
+    }, ignoreInit=TRUE)
      
     ## General observations
     
