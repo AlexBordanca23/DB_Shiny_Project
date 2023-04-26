@@ -1,0 +1,14 @@
+name: DB_Shiny_Project
+title: DB_Shiny_Project
+username:
+account: alexbordanca23
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8963143
+bundleId: 7140210
+url: https://alexbordanca23.shinyapps.io/DB_Shiny_Project/
+when: 1682543103.91344
+lastSyncTime: 1682543103.91346
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|Final Project Part 3 - Alex Bordanca - David Thiriot.docx
